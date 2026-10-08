@@ -46,6 +46,9 @@ var (
 	pendingUpdates int32
 
 	netpollWakeSig uint32 // used to avoid duplicate calls of netpollBreak
+
+	// pollWaiting is 1 while a netpoll waits in poll, holding mtxset.
+	pollWaiting uint32
 )
 
 func netpollinit() {
@@ -155,8 +158,12 @@ func netpoll(delay int64) (gList, int32) {
 	if delay < 0 {
 		timeout = ^uintptr(0)
 	} else if delay == 0 {
-		// TODO: call poll with timeout == 0
-		return gList{}, 0
+		// Look without waiting. The scheduler and sysmon poll this way
+		// while every P is busy; if it found nothing, a socket's data
+		// would be noticed only once a P had nothing else to run, and a
+		// program that keeps them all busy, as a GUI drawing nonstop
+		// does, would never see it.
+		timeout = 0
 	} else if delay < 1e6 {
 		timeout = 1
 	} else if delay < 1e15 {
@@ -168,11 +175,26 @@ func netpoll(delay int64) (gList, int32) {
 	}
 retry:
 	lock(&mtxpoll)
+	if delay == 0 && atomic.Load(&pollWaiting) != 0 {
+		// A waiting netpoll holds mtxset until it returns, and it will
+		// see what this one would. Waking it instead made the two take
+		// turns, each waking the other, and kept a thread busy.
+		unlock(&mtxpoll)
+		return gList{}, 0
+	}
 	lock(&mtxset)
 	pendingUpdates = 0
+	if delay != 0 {
+		// Set under mtxpoll, so that a netpoll(0) which got mtxpoll
+		// after this sees it, and one before it has mtxset already.
+		atomic.Store(&pollWaiting, 1)
+	}
 	unlock(&mtxpoll)
 
 	n, e := poll(&pfds[0], uintptr(len(pfds)), timeout)
+	if delay != 0 {
+		atomic.Store(&pollWaiting, 0)
+	}
 	if n < 0 {
 		if e != _EINTR {
 			println("errno=", e, " len(pfds)=", len(pfds))
