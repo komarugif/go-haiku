@@ -280,6 +280,7 @@ func sysvicall6(fn *libcFunc, a1, a2, a3, a4, a5, a6 uintptr) uintptr {
 	return libcall.r1
 }
 
-func issetugid() int32 {
-	return int32(sysvicall0(&libc_issetugid))
-}
+func getuid() int32  { return int32(sysvicall0(&libc_getuid)) }
+func geteuid() int32 { return int32(sysvicall0(&libc_geteuid)) }
+func getgid() int32  { return int32(sysvicall0(&libc_getgid)) }
+func getegid() int32 { return int32(sysvicall0(&libc_getegid)) }

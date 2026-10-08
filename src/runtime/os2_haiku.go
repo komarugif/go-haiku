@@ -39,6 +39,10 @@ import (
 //go:cgo_import_dynamic libc_pthread_self pthread_self "libroot.so"
 //go:cgo_import_dynamic libc_pthread_kill pthread_kill "libroot.so"
 //go:cgo_import_dynamic libc_raise raise "libroot.so"
+//go:cgo_import_dynamic libc_getuid getuid "libroot.so"
+//go:cgo_import_dynamic libc_geteuid geteuid "libroot.so"
+//go:cgo_import_dynamic libc_getgid getgid "libroot.so"
+//go:cgo_import_dynamic libc_getegid getegid "libroot.so"
 //go:cgo_import_dynamic libc_read read "libroot.so"
 //go:cgo_import_dynamic libc_select select "libroot.so"
 //go:cgo_import_dynamic libc_sched_yield sched_yield "libroot.so"
@@ -77,6 +81,10 @@ import (
 //go:linkname libc_pthread_self libc_pthread_self
 //go:linkname libc_pthread_kill libc_pthread_kill
 //go:linkname libc_raise libc_raise
+//go:linkname libc_getuid libc_getuid
+//go:linkname libc_geteuid libc_geteuid
+//go:linkname libc_getgid libc_getgid
+//go:linkname libc_getegid libc_getegid
 //go:linkname libc_read libc_read
 //go:linkname libc_select libc_select
 //go:linkname libc_sched_yield libc_sched_yield
@@ -116,6 +124,10 @@ var (
 	libc_pthread_self,
 	libc_pthread_kill,
 	libc_raise,
+	libc_getuid,
+	libc_geteuid,
+	libc_getgid,
+	libc_getegid,
 	libc_read,
 	libc_sched_yield,
 	libc_select,
