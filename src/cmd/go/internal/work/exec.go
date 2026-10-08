@@ -999,7 +999,7 @@ func (b *Builder) build(ctx context.Context, a *Action) (err error) {
 	// This is read by readGccgoArchive in cmd/internal/buildid/buildid.go.
 	if a.buildID != "" && cfg.BuildToolchainName == "gccgo" {
 		switch cfg.Goos {
-		case "aix", "android", "dragonfly", "freebsd", "illumos", "linux", "netbsd", "openbsd", "solaris":
+		case "aix", "android", "dragonfly", "freebsd", "haiku", "illumos", "linux", "netbsd", "openbsd", "solaris":
 			asmfile, err := b.gccgoBuildIDFile(a)
 			if err != nil {
 				return err
@@ -2482,7 +2482,10 @@ func (b *Builder) compilerCmd(compiler []string, incdir, workdir string) []strin
 	// gcc-4.5 and beyond require explicit "-pthread" flag
 	// for multithreading with pthread library.
 	if cfg.BuildContext.CgoEnabled {
-		a = append(a, "-pthread")
+		// Haiku's gcc takes no -pthread: threads are libroot's.
+		if cfg.Goos != "haiku" {
+			a = append(a, "-pthread")
+		}
 	}
 
 	if cfg.Goos == "aix" {

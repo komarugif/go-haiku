@@ -19,6 +19,7 @@ package cgo
 #cgo netbsd LDFLAGS: -lpthread
 #cgo openbsd LDFLAGS: -lpthread
 #cgo aix LDFLAGS: -Wl,-berok
+#cgo haiku LDFLAGS: -lroot -lbsd -lnetwork
 
 // Use -fno-stack-protector to avoid problems locating the
 // proper support functions. See issues #52919, #54313, #58385.
