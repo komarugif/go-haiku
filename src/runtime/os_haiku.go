@@ -28,7 +28,7 @@ type mOS struct {
 }
 
 const (
-	_SS_DISABLE  = 4
+	_SS_DISABLE  = 2 // Haiku: SS_DISABLE is 0x2 (signal.h); 4 is Solaris's
 	_NSIG        = 33
 	_SI_USER     = 0
 	_SIG_SETMASK = 3 // Modified for Haiku support
