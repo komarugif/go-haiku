@@ -10,9 +10,6 @@ import (
 	"unsafe"
 )
 
-// Remove
-//libc_madvise,
-
 //go:cgo_export_dynamic runtime.end _end
 //go:cgo_export_dynamic runtime.etext _etext
 //go:cgo_export_dynamic runtime.edata _edata
@@ -29,6 +26,7 @@ import (
 //go:cgo_import_dynamic libc_malloc malloc "libroot.so"
 //go:cgo_import_dynamic libc_mmap mmap "libroot.so"
 //go:cgo_import_dynamic libc_munmap munmap "libroot.so"
+//go:cgo_import_dynamic libc_madvise madvise "libroot.so"
 //go:cgo_import_dynamic libc_open open "libroot.so"
 //go:cgo_import_dynamic libc_pthread_attr_destroy pthread_attr_destroy "libroot.so"
 //go:cgo_import_dynamic libc_pthread_attr_getstacksize pthread_attr_getstacksize "libroot.so"
@@ -71,6 +69,7 @@ import (
 //go:linkname libc_malloc libc_malloc
 //go:linkname libc_mmap libc_mmap
 //go:linkname libc_munmap libc_munmap
+//go:linkname libc_madvise libc_madvise
 //go:linkname libc_open libc_open
 //go:linkname libc_pthread_attr_destroy libc_pthread_attr_destroy
 //go:linkname libc_pthread_attr_getstacksize libc_pthread_attr_getstacksize
@@ -114,6 +113,7 @@ var (
 	libc_malloc,
 	libc_mmap,
 	libc_munmap,
+	libc_madvise,
 	libc_open,
 	libc_pthread_attr_destroy,
 	libc_pthread_attr_getstacksize,
@@ -422,10 +422,10 @@ func getcontext(context *ucontext) /* int32 */ {
 	sysvicall1(&libc_getcontext, uintptr(unsafe.Pointer(context)))
 }
 
-/////go:nosplit
-// func madvise(addr unsafe.Pointer, n uintptr, flags int32) {
-// 	sysvicall3(&libc_madvise, uintptr(addr), uintptr(n), uintptr(flags))
-// }
+//go:nosplit
+func madvise(addr unsafe.Pointer, n uintptr, flags int32) {
+	sysvicall3(&libc_madvise, uintptr(addr), uintptr(n), uintptr(flags))
+}
 
 //go:nosplit
 func mmap(addr unsafe.Pointer, n uintptr, prot, flags, fd int32, off uint32) (unsafe.Pointer, int) {

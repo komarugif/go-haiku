@@ -23,10 +23,16 @@ func sysAllocOS(n uintptr, _ string) unsafe.Pointer {
 }
 
 func sysUnusedOS(v unsafe.Pointer, n uintptr) {
+	if GOOS == "haiku" {
+		// Haiku's MADV_DONTNEED keeps the pages, and their contents;
+		// its MADV_FREE gives them back at once (a C test, R1/beta6).
+		madvise(v, n, _MADV_FREE)
+		return
+	}
 	if debug.madvdontneed != 0 {
-		//madvise(v, n, _MADV_DONTNEED)
+		madvise(v, n, _MADV_DONTNEED)
 	} else {
-		//madvise(v, n, _MADV_FREE)
+		madvise(v, n, _MADV_FREE)
 	}
 }
 

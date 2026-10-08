@@ -18,6 +18,10 @@ const (
 
 	_MAP_ANON    = 0x8
 	_MAP_PRIVATE = 0x2
+
+	// madvise; Haiku's MADV_DONTNEED keeps the pages (see mem_bsd.go).
+	_MADV_DONTNEED = 0x5
+	_MADV_FREE     = 0x6
 	_MAP_FIXED   = 0x4
 
 	_SA_SIGINFO = 0x40
