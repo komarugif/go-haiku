@@ -642,3 +642,17 @@ const sigPerThreadSyscall = 1 << 31
 func runPerThreadSyscall() {
 	throw("runPerThreadSyscall only valid on linux")
 }
+
+// libinit.go needs these on every system since go1.27. Haiku, like
+// Solaris, whose form they take, does not start the runtime from C
+// before it is initialized.
+
+//go:nowritebarrierrec
+//go:nosplit
+func libpreinit() {}
+
+//go:nowritebarrierrec
+//go:nosplit
+func newosproc0(stacksize uintptr, fn unsafe.Pointer) {
+	throw("bad newosproc0")
+}
