@@ -19,7 +19,9 @@ import (
 
 //go:cgo_import_dynamic libc__errnop _errnop "libroot.so"
 //go:cgo_import_dynamic libc_clock_gettime clock_gettime "libroot.so"
-//go:cgo_import_dynamic libc_exit exit "libroot.so"
+// _exit, as Solaris has it: exit() ran the C++ destructors of every
+// library while other threads still ran, and programs crashed on exit.
+//go:cgo_import_dynamic libc_exit _exit "libroot.so"
 //go:cgo_import_dynamic libc_fstat fstat#LIBROOT_1_ALPHA1 "libroot.so"
 //go:cgo_import_dynamic libc_getcontext getcontext "libroot.so"
 //go:cgo_import_dynamic libc_kill kill "libroot.so"
