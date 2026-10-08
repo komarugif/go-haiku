@@ -5,7 +5,12 @@
 // This file implements sysSocket for platforms that do not provide a fast path
 // for setting SetNonblock and CloseOnExec.
 
-//go:build aix || darwin
+//go:build aix || darwin || haiku
+
+// Haiku is here, not in sock_cloexec.go: there, a socket made with
+// SOCK_NONBLOCK in socket() reports O_NONBLOCK, but its accept still blocks
+// (R1/beta6), so Accept held a thread and Close of the listener waited for it
+// forever. With O_NONBLOCK set by fcntl, accept returns EAGAIN.
 
 package net
 
